@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0px;
+            background-color: aliceblue;
+        }
+
+        #wrapper{
+            box-sizing: border-box;
+            width: 100vw;
+        }
+
+        #NavBar {
+            display: flex;
+            margin: 0px auto;
+            height: 5rem;
+            margin-top: 0px;
+            background-color: teal;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        #input {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 3rem auto;
+            height: 3rem;
+            width: 40%;
+            box-sizing: border-box;
+        }
+
+        #container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            margin: auto;
+            width: 90%;
+            gap: 1.5rem;
+            padding: 1rem;
+            box-sizing: border-box;
+            background: yellowgreen;
+            border-radius: 0.5rem;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        }
+
+        #container>div {
+            height: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background: rgb(169, 188, 188);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            color: rgb(15, 15, 114);
+            box-sizing: border-box;
+            
+        }
+
+        #container img {
+
+            border-radius: 0.5rem;
+            height: 50%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #input>label {
+            font-size: 1.5rem;
+            text-transform: capitalize;
+            box-sizing: border-box;
+        }
+
+        #movieInput {
+            height: 1.5rem;
+            width: 12rem;
+            border-radius: 3px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #submit {
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            background: darkolivegreen;
+            color: wheat;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        
+        #submit:hover {
+            background: red;
+        }
+
+        @media (max-width:768px) {
+            #container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            #container>div{
+                padding: 0px;
+            }
+
+            #input > label {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            #input{
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="NavBar">
+        <h1>Movies</h1>
+    </div>
+
+    <div id="input">
+        <label> Enter the movie name : <input type="text" id="movieInput" placeholder="Enter the movie name"></label>
+        <button id="submit">Search</button>
+    </div>
+
+    <div id="wrapper">
+
+
+
+    </div>
+
+    <script>
+
+        let url = 'http://www.omdbapi.com';
+        let apiKey = "2de61882"
+
+        function displayData(movies) {
+
+            let container = document.createElement('div')
+            container.setAttribute('id', 'container')
+
+            movies.forEach(function (movie) {
+
+                let imdb_rating;
+
+                async function retreieverating() {
+
+                    imdb_rating = await fetchImdb(movie.imdbID)
+
+                    if (Number(imdb_rating) > 7.5) {
+                        let { Title, Year, imdbID, Poster } = movie
+
+                        let card = document.createElement('div')
+
+                        let title_c = document.createElement('h1')
+                        let year_c = document.createElement('h2')
+                        let imdb_c = document.createElement('h2')
+                        let recommended = document.createElement('h2')
+                        let poster_c = document.createElement('img')
+
+                        title_c.innerText = Title
+                        year_c.innerText = Year
+                        imdb_c.innerText = imdb_rating
+                        recommended.innerText = 'Recommended'
+                        poster_c.src = Poster
+
+                        card.append(poster_c, title_c, year_c, imdb_c, recommended)
+
+                        container.append(card)
+
+                        document.querySelector('#wrapper').append(container)
+                    }
+                    else {
+                        let { Title, Year, imdbID, Poster } = movie
+
+                        let card = document.createElement('div')
+
+                        let title_c = document.createElement('h1')
+                        let year_c = document.createElement('h2')
+                        let imdb_c = document.createElement('h2')
+                        let poster_c = document.createElement('img')
+
+                        title_c.innerText = Title
+                        year_c.innerText = Year
+                        imdb_c.innerText = imdb_rating
+                        poster_c.src = Poster
+
+                        card.append(poster_c, title_c, year_c, imdb_c)
+
+                        container.append(card)
+
+                        document.querySelector('#wrapper').append(container)
+                    }
+
+                }
+
+                retreieverating()
+
+
+            });
+
+        }
+
+        function errorMsgHandler(errorMsg) {
+
+            let card = document.createElement('div')
+            card.setAttribute('id', 'ErrorCard')
+            card.style.display = 'flex'
+            card.style.alignItems = 'center'
+            card.style.justifyContent = 'center'
+            card.style.color = 'red'
+            card.style.background = 'aquaMarine'
+            card.style.width = '90%'
+            card.style.height = '60vh'
+            card.style.margin = 'auto'
+            card.style.borderRadius = '1rem'
+
+            let error = document.createElement('h1')
+            error.innerText = errorMsg.Error
+
+            card.append(error)
+
+            document.querySelector('#wrapper').append(card)
+        }
+
+        async function fetchImdb(id) {
+
+            try {
+
+                let result = await fetch(`${url}?apiKey=${apiKey}&i=${id}`);
+
+                data = await result.json()
+
+                return data.imdbRating
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        document.querySelector('#submit').addEventListener('click', function () {
+
+            document.querySelector('#wrapper').innerHTML = '';
+
+            let movieName = document.getElementById('movieInput').value;
+
+            async function fetchData() {
+
+                try {
+
+                    let result = await fetch(`${url}?apiKey=${apiKey}&s=${movieName}`);
+
+                    data = await result.json()
+
+                    document.querySelector('#movieInput').value = ''
+
+                    if (data.Response == "True") {
+                        console.log(data)
+                        displayData(data.Search)
+                    }
+                    else {
+                        errorMsgHandler(data)
+                    }
+
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+
+            fetchData()
+
+        })
+
+    </script>
+
+</body>
+
+</html>
